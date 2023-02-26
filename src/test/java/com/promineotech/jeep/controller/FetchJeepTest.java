@@ -3,6 +3,8 @@ package com.promineotech.jeep.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.math.BigDecimal;
+import java.util.LinkedList;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,10 @@ import com.promineotech.jeep.entity.JeepModel;
  * to run on the same port every time.
  * 
  * ActiveProfiles annotation tells Spring which active bean definition profile to use when loading
- * an Application Context for test classes. We haven't discussed beans yet.
+ * an Application Context for test classes.
  * 
- * Sql annotation is used to annotate a test class or test method to configure SQL scripts and statements
- * to be executed against a given database during integration tests. I'm sure this will become clear soon.
+ * Sql annotation is used to denote a test class or test method to configure SQL scripts and statements
+ * to be executed against a given database during integration tests.
  * 
  * SqlConfig annotation tells Spring how to parse sql scripts.
  */
@@ -47,23 +49,47 @@ import com.promineotech.jeep.entity.JeepModel;
 class FetchJeepTest {
 
 	/*
-	 * Autowired annotation tells Spring Boot to inject the TestRestTemplate it has
-	 * created in the Application Context into the variable following. An instance
+	 * Autowired annotation tells Spring Boot to inject the TestRestTemplate object it has
+	 * instantiated during ComponentScan into the variable following. An instance
 	 * of dependency injection.
 	 * 
-	 * TestRestTemplate allows us to send HTTP to the running application. It acts
-	 * as a REST server we can use to test applications using Spring Boot.
+	 * TestRestTemplate tells Spring Boot that this class is a REST Server, which allows us to
+	 * send HTTP to the running application during tests.
 	 */
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	/*
 	 * LocalServerPort annotation tells Spring Boot to fill in, or inject, the port
-	 * it has created in the Application Context into the variable following. An
+	 * it has instatiated during ComponentScan into the variable following. An
 	 * instance of dependency injection.
 	 */
 	@LocalServerPort
 	private int serverPort;
+
+	protected List<Jeep> buildExpected() {
+		List<Jeep> list = new LinkedList<>();
+
+		// @formatter:off
+	    list.add(Jeep.builder()
+	        .modelId(JeepModel.WRANGLER)
+	        .trimLevel("Sport")
+	        .numDoors(2)
+	        .wheelSize(17)
+	        .basePrice(new BigDecimal("28475.00"))
+	        .build());
+	    
+	    list.add(Jeep.builder()
+	    	.modelId(JeepModel.WRANGLER)
+	        .trimLevel("Sport")
+	        .numDoors(4)
+	        .wheelSize(17)
+	        .basePrice(new BigDecimal("31975.00"))
+	        .build());
+	    // @formatter:on
+
+		return list;
+	} // end buildExpected
 
 	/*
 	 * Tests that we can send an HTTP GET request and receive the proper response.
@@ -73,20 +99,28 @@ class FetchJeepTest {
 	 * means no HTTP entity is sent, and the ParameterizedTypeReference is used to
 	 * pass generic type information.
 	 * 
-	 * This method tests that the Test Rest Server returns a status of 200, signifying
-	 * that the test was successful.
+	 * This method tests that the Test Rest Server returns a status of 200,
+	 * signifying that the test was OK/successful.
+	 * Also that the response list of jeeps matches the expected list of jeeps given the parameters requested.
 	 */
 	@Test
 	void assertThatJeepsAreReturnedWhenAValidModelAndTrimAreSupplied() {
+		// Given: a valid model, trim, and URI
 		JeepModel model = JeepModel.WRANGLER;
 		String trim = "Sport";
 		String uri = String.format("http://localhost:%d/jeeps?model=%s&trim=%s", serverPort, model, trim);
 
+		// When : a connection is made to the URI
 		ResponseEntity<List<Jeep>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<>() {
 				});
 
+		// Then: a success (OK - 200) status code is returned
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		// And: the actual list returned is the same as the expected List
+		List<Jeep> expected = buildExpected();
+		assertThat(response.getBody()).isEqualTo(expected);
 
 	} // end assertThatJeepsAreReturnedWhenAValidModelAndTrimAreSupplied
 

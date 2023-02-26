@@ -17,9 +17,33 @@ import lombok.NoArgsConstructor;
  * the equals() and hashCode() methods for all fields in the class. It also generates constructors
  * with single parameters for fields that require special handling. 
  * 
- * Builder annotation allows the properties of all fields of an object to be set with a single statement.
+ * Data annotation does the following (simplified):
+ *      @Getter @Setter(on non-final fields) @RequiredArgsConstructor @ToString @EqualsAndHashCode
+ *      Since no args are required for this application, this generates a no-args constructor.
  * 
- * The Constructor annotations are self-explanatory.
+ * Builder annotation does the following: (In order of the outline)
+ *      In the annotated class (Jeep), generates an all-args constructor.
+ *          In this case, it changed the no-args constructor created by @Data so we
+ *          had to add @NoArgsConstructor annotation.
+ *      In the annotated class (Jeep), generates a builder() method to create a new instance of builder.
+ *      In the annotated class (Jeep), generates the JeepBuilder class as an inner class.
+ *      In the Builder class, generates private non-static, non-final fields
+ *          for each parameter of the annotated class.
+ *      In the Builder class, generates a package private no-args empty constructor.
+ *      In the Builder class, generates a setter-like method for 
+ *          each field (ex: this.modelPK = modelPK). The "this" is returned for each field 
+ *          which allows the "setter" calls to be chained as shown in FetchJeepTestSupport.
+ *      In the Builder class, generates a build() method which calls the setter-like methods,
+ *          passing in each field.
+ *      In the Builder class, generates a toString() override method.
+ *      
+ * @NoArgsConstructor generates a no-args constructor to replace the one that @Builder changed.
+ *      Adding the no-args constructor breaks @Builder so we have to add an all-args
+ *      constructor to fix @Builder.
+ *      We added the no-args constructor for possible future use.
+ *      
+ * @AllArgsConstructor generates an all-args constructor to replace the one that got changed
+ *      when we added the @NoArgsConstructor. This fixes @Builder
  */
 @Data
 @Builder

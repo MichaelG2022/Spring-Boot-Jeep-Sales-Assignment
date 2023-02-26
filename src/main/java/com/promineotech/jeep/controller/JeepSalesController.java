@@ -21,8 +21,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 
 /*
- * RequestMapping annotation tells Spring Boot to map all HTTP requests of /jeeps will be mapped to this class/interface.
- * Spring Boot will then look for mapping to HTTP verbs.
+ * RequestMapping annotation tells Spring Boot to map all HTTP requests of /jeeps to this class/interface.
+ * Spring Boot will then look for mapping to HTTP verbs, such as GetMapping at the bottom of this class.
  * 
  * OpenAPIDefinition annotation provides the "chapter" title as well as information about the server
  * for Swagger to provide organized documentation.
@@ -35,8 +35,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
  * application/json. The 200 code also provides the schema to help Swagger define the data types in the response from the Controller.
  * 
  * Parameter annotation provides information about the method arguments.
- * 
- * 
  */
 @RequestMapping("/jeeps")
 // @formatter:off
