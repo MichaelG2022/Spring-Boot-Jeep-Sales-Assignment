@@ -42,8 +42,8 @@ import com.promineotech.jeep.entity.JeepModel;
 @ActiveProfiles("test")
 // @formatter:off
 @Sql(scripts = { 
-	"classpath:flyway/migrations/V1.0_Jeep_Schema.sql",
-	"Classpath:flyway/migrations/V1.1_Jeep_Data.sql" }, 
+	"classpath:flyway/migrations/V1.0__Jeep_Schema.sql",
+	"Classpath:flyway/migrations/V1.1__Jeep_Data.sql" }, 
 	config = @SqlConfig(encoding = "utf-8"))
 // @formatter:on
 class FetchJeepTest {

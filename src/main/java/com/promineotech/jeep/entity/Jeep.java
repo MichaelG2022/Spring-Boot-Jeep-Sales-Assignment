@@ -2,6 +2,8 @@ package com.promineotech.jeep.entity;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,12 +39,12 @@ import lombok.NoArgsConstructor;
  *          passing in each field.
  *      In the Builder class, generates a toString() override method.
  *      
- * @NoArgsConstructor generates a no-args constructor to replace the one that @Builder changed.
+ * NoArgsConstructor annotation generates a no-args constructor to replace the one that @Builder changed.
  *      Adding the no-args constructor breaks @Builder so we have to add an all-args
  *      constructor to fix @Builder.
  *      We added the no-args constructor for possible future use.
  *      
- * @AllArgsConstructor generates an all-args constructor to replace the one that got changed
+ * AllArgsConstructor annotation generates an all-args constructor to replace the one that got changed
  *      when we added the @NoArgsConstructor. This fixes @Builder
  */
 @Data
@@ -56,4 +58,19 @@ public class Jeep {
 	private int numDoors;
 	private int wheelSize;
 	private BigDecimal basePrice;
+	
+	/*
+	   * Added to fix modelPK issue with FetchJeepTest
+	   * 
+	   * When Jackson is serializing this object into JSON, it will ignore/leave out the modelPK. Going
+	   * the other way, from JSON to Jeep object, if Jackson finds a modelPK, it will populate it in the
+	   * object.
+	   * 
+	   * This is because the @JsonIgnore is only on the getter, not the setter.
+	   */
+	  @JsonIgnore
+	  public Long getModelPK() {
+	    return modelPK;
+	  } // end getModelPK
+	  
 } // end CLASS
